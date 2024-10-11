@@ -17,7 +17,6 @@ CORS(app)
 
 @app.route('/ocr', methods=['POST'])
 def ocr_handler():
-    print(request.content_type)
     if request.content_type.startswith('multipart/form-data'):
         # 文件上传处理
         if 'file' not in request.files:
@@ -47,10 +46,12 @@ def ocr_handler():
     # 执行 OCR 识别
     result = ocr.ocr(image_np, cls=True)
 
-    texts = [line[1][0] for res in result for line in res]  # 提取每一行识别的文字
-    final_text = "\n".join(texts)  # 将所有文字拼接为一个字符串
+    if result is None:
+        return jsonify({"error": "OCR failed, result is None"}), 500
 
-    return jsonify({"text": final_text}), 200
+    # 修改提取文字的逻辑，防止 NoneType 错误
+    texts = [line[1][0] for res in result if res is not None for line in res]
+    return jsonify({"text": "\n".join(texts)})
 
 
 if __name__ == '__main__':
