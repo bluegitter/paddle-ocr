@@ -23,7 +23,7 @@
 1. 创建新的 conda 虚拟环境并激活：
 
     ```bash
-    conda create -n paddlex python=3.10
+    conda create -n paddlex python=3.8
     conda activate paddlex
     ```
 
@@ -36,8 +36,14 @@
 3. 安装其他必要的依赖库：
 
     ```bash
-    pip install paddlepaddle paddleocr ujson
-    pip install  flask flask-cors
+    pip install paddlepaddle paddleocr ujson -i https://pypi.tuna.tsinghua.edu.cn/simple
+    pip install  flask flask-cors -i https://pypi.tuna.tsinghua.edu.cn/simple
+    ```
+
+    如果系统提示: 
+    Error: Your machine doesn't support AVX, but the installed PaddlePaddle is avx core, you should reinstall paddlepaddle with no-avx core.
+    ```bash
+    pip install paddlepaddle==2.3.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html --no-index --no-deps
     ```
 
 ## 使用指南
@@ -60,7 +66,7 @@
 
 1. **使用 curl 进行测试**：
 
-   将以下内容替换为实际的 `base64` 图片内容（`data:image/png;base64,...` 格式）：
+   方式1: 将以下内容替换为实际的 `base64` 图片内容（`data:image/png;base64,...` 格式）：
 
     ```bash
     curl -X POST http://127.0.0.1:5000/ocr \
@@ -70,6 +76,10 @@
     }'
     ```
 
+   方式2: 以文件方式识别
+   ```bash
+   curl -X POST http://192.168.14.48:5000/ocr -F file=@test.png
+   ```
 2. **成功响应示例**：
 
     如果图片中包含 "Hello OCR" 字样，响应可能会类似以下 JSON：
